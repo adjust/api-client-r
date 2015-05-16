@@ -1,0 +1,13 @@
+Package: adjust
+Type: Package
+Title: R client for the adjust.com API
+Version: 0.0.1
+Date: 2015-05-13
+Author: Nikola Chochkov
+Maintainer: Nikola Chochkov <nikola@adjust.com>
+Description: Facilitates getting adjust.com data into R
+License: MIT License
+Depends:
+    httr
+Collate:
+    'client.R'
