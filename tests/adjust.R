@@ -12,6 +12,8 @@ test_that('.api.path() composes API paths correctly', {
 })
 
 test_that('.query.list() returns correct list of query params', {
-  expect_that(list(countries='us,de'), is_identical_to(.query.list(countries=c('us', 'de'))))
-  expect_that(list(device_types='phone,tablet'), is_identical_to(.query.list(device_types=c('phone', 'tablet'))))
+  expect_that(list(countries='us,de'), is_identical_to(.query.list(countries=c('US', 'de'))))
+  expect_that(list(device_types='phone,tablet'), is_identical_to(.query.list(device_types=c('Phone', 'Tablet'))))
+  expect_that(list(countries='us,de', device_types='phone,tablet', sandbox='true'),
+    is_identical_to(.query.list(countries=c('us', 'de'), device_types=c('phone', 'tablet'), sandbox=TRUE)))
 })
