@@ -41,12 +41,12 @@ A more complete example:
 
     > adjust.deliverables(
         countries=c('us', 'de'),
-        kpis=c('clicks', 'sessions', 'installs'),
+        kpis=c('sessions', 'installs'),
         start_date='2015-05-01',
         end_date='2015-05-10',
         sandbox=TRUE,
         grouping=c('trackers', 'countries'),
-        tracker.token='nmzuu7')
+        tracker.token='26kvyi')
       )
 
 For a full list of options and supported KPIs, see `?adjust.deliverables` from your R session.

@@ -1,5 +1,4 @@
 .ADJUST.HOST <- 'https://api.adjust.com'
-.ADJUST.HOST <- 'http://localhost:3035'
 .ROOT.PATH <- 'apps'
 .TRACKERS.ROUTE <- 'trackers'
 .ACCEPT.HEADER <- 'text/csv'
