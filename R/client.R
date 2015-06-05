@@ -1,5 +1,5 @@
 .ADJUST.HOST <- 'https://api.adjust.com'
-.ROOT.PATH <- 'apps'
+.ROOT.PATH <- 'kpis/v1'
 .TRACKERS.ROUTE <- 'trackers'
 .ACCEPT.HEADER <- 'text/csv'
 .AUTHORIZATION.HEADER <- 'Token token=%s'
