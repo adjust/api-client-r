@@ -20,7 +20,7 @@ You're requered to enter your Adjust `user_token` for authentication that will b
 you could optionally give an `app_token` too, in case you plan to focus on one app. Alternatively, an `app_token` could
 be given with every request.
 
-    > adjust.setup(user_token='aYSsuEVhAMDQDyZ8kj2K', app_token='abcdefg')
+    > adjust.setup(user.token='aYSsuEVhAMDQDyZ8kj2K', app.token='abcdefg')
 
 Now you're fully setup to start requesting some data from the Adjust API. You can start with the simplest query:
 

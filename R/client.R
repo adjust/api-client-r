@@ -54,7 +54,7 @@ user.token <- function() {
 #' Delivers data for Adjust App KPIs. Refer to the KPI service docs under https://docs.adjust.com/en/kpi-service/
 #' together with this help entry.
 #' @param app.token pass it here or set it up once with \code{\link{set.app.token}}
-#' @param tracker.token If you want data for a given parent tracker, pass its token.
+#' @param tracker.token If you want data for a specific parent tracker, pass its token.
 #' @param start_date YYYY-MM-DD The start date of the selected period.
 #' @param end_date YYYY-MM-DD The end date of the selected period.
 #' @param kpis A vector of App KPIs. See KPI service docs for more.
