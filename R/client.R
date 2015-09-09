@@ -51,6 +51,20 @@ user.token <- function() {
   get('user.token', envir=.AdjustRuntimeEnv)
 }
 
+#' Enable the verbose setting. Doing this will print out additional meta data on the API requests.
+#' @seealso \code{\link{adjust.disable.verbose}}
+#' @export
+adjust.enable.verbose <- function() {
+  assign('adjust.verbose', TRUE, envir=.AdjustRuntimeEnv)
+}
+
+#' Disable the verbose setting. Doing this will stop printing out additional meta data on the API requests.
+#' @seealso \code{\link{adjust.enable.verbose}}
+#' @export
+adjust.disable.verbose <- function() {
+  assign('adjust.verbose', FALSE, envir=.AdjustRuntimeEnv)
+}
+
 #' Delivers data for Adjust App KPIs. Refer to the KPI service docs under https://docs.adjust.com/en/kpi-service/
 #' together with this help entry.
 #' @param app.token pass it here or set it up once with \code{\link{set.app.token}}
@@ -132,14 +146,18 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
 .get.request <- function(...) {
   resp <- GET(.ADJUST.HOST, ..., add_headers(
     'Accept'=.ACCEPT.HEADER,
-    'Authorization'=sprintf(.AUTHORIZATION.HEADER, user.token()))
-  )
+    'Authorization'=sprintf(.AUTHORIZATION.HEADER, user.token())
+  ))
+
+  if (.verbose()) {
+    cat(sprintf("Request URL:\n%s\n", URLdecode(resp$url)))
+  }
 
   if (status_code(resp) != 200) {
     stop(content(resp))
   }
 
-  data.frame(content(resp))
+  data.table(content(resp))
 }
 
 .api.path <- function(app.token, resource=NULL, tracker.token=NULL) {
@@ -171,4 +189,12 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
   }
 
   res
+}
+
+.verbose <- function() {
+  if (exists('adjust.verbose', envir=.AdjustRuntimeEnv)) {
+    get('adjust.verbose', envir=.AdjustRuntimeEnv)
+  } else {
+    FALSE
+  }
 }
