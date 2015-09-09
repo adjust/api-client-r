@@ -2,6 +2,8 @@
 
 export(adjust.cohorts)
 export(adjust.deliverables)
+export(adjust.disable.verbose)
+export(adjust.enable.verbose)
 export(adjust.events)
 export(adjust.setup)
 export(app.token)
