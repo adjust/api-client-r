@@ -157,7 +157,7 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
     stop(content(resp))
   }
 
-  data.table(content(resp))
+  data.table(content(resp,encoding="UTF-8"))
 }
 
 .api.path <- function(app.token, resource=NULL, tracker.token=NULL) {
