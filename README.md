@@ -29,7 +29,7 @@ You can also set multiple apps up.
     > adjust.setup(user.token='aYSsuEVhAMDQDyZ8kj2K', app.tokens=c('abcdefg', 'gfedcba'))
 
 Note that if `app.tokens` variable has been set, it'll take precedence over `app.token` for API calls that support
-multiple apps, such as deliverables.
+multiple apps, such as `adjust.deliverables()`.
 
 ### Statistics API calls
 
@@ -60,6 +60,7 @@ A more complete example:
         tracker.token='26kvyi')
       )
 
+For this function, you can issue calls for multiple app tokens at the same time and group for example by `grouping=c('app', 'network')`.
 For a full list of options and supported KPIs, see `?adjust.deliverables` from your R session.
 
 Similarly you have `adjust.events` for your custom Adjust-Events queries and `adjust.cohorts` for Cohorts. The R help
