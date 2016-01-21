@@ -35,11 +35,11 @@ set.app.token <- function(app.token) {
 #' @seealso \code{\link{set.user.token}}, \code{\link{user.token}}, \code{\link{set.app.token}}, \code{\link{adjust.setup}}
 #' @export
 app.token <- function() {
-  if (!exists('app.token', envir=.AdjustRuntimeEnv)) {
+  if (!.exists('app.token')) {
     stop('App token needs to be setup first through set.app.token()')
   }
 
-  get('app.token', envir=.AdjustRuntimeEnv)
+  .get('app.token')
 }
 
 #' Set Adjust app.tokens once using this function and you can issue subsequent API requests for multiple apps saving
@@ -52,11 +52,11 @@ set.app.tokens <- function(app.tokens) { assign('app.tokens', app.tokens, envir=
 #' \code{\link{set.app.tokens}}, \code{\link{adjust.setup}}
 #' @export
 app.tokens <- function() {
-  if (!exists('app.tokens', envir=.AdjustRuntimeEnv)) {
+  if (!.exists('app.tokens')) {
     stop('The multiple App tokens variable `app.tokens` needs to be setup first through set.app.tokens()')
   }
 
-  get('app.tokens', envir=.AdjustRuntimeEnv)
+  .get('app.tokens')
 }
 
 #' Set an Adjust user.token, required for authorization.
@@ -70,7 +70,10 @@ set.user.token <- function(user.token) {
 #' @seealso \code{\link{set.user.token}}, \code{\link{adjust.setup}}, \code{\link{set.app.token}}, \code{\link{app.token}}
 #' @export
 user.token <- function() {
-  get('user.token', envir=.AdjustRuntimeEnv)
+  if (!.exists('user.token')) {
+    stop('The user.token needs to be setup first using set.user.token("abcdefg").')
+  }
+  .get('user.token')
 }
 
 #' Enable the verbose setting. Doing this will print out additional meta data on the API requests.
@@ -113,7 +116,7 @@ adjust.deliverables <- function(app.token=NULL, tracker.token=NULL, ..., app.tok
   if (is.null(app.tokens) && !is.null(app.token))
     return(.api.query(NULL, app.token=app.token, tracker.token=tracker.token, ...))
 
-  if (!is.null(app.tokens) || exists('app.tokens', envir=.AdjustRuntimeEnv))
+  if (!is.null(app.tokens) || .exists('app.tokens'))
     return(.api.multiple.apps.query(app.tokens=app.tokens, ...))
 
   .api.query(NULL, app.token=app.token, tracker.token=tracker.token, ...)
@@ -166,7 +169,7 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
 }
 
 .api.query <- function (resource, app.token, tracker.token, ...) {
-  if (is.null(app.token) && !exists('app.token', envir=.AdjustRuntimeEnv)) {
+  if (is.null(app.token) && !.exists('app.token')) {
     stop('You need to pass an app.token or set one using set.app.token()')
   }
 
@@ -177,7 +180,7 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
 }
 
 .api.multiple.apps.query <- function (app.tokens, ...) {
-  if (is.null(app.tokens) && !exists('app.tokens', envir=.AdjustRuntimeEnv)) {
+  if (is.null(app.tokens) && !.exists('app.tokens')) {
     stop('You need to pass app.tokens or set one using set.app.tokens()')
   }
 
@@ -244,9 +247,13 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
 }
 
 .verbose <- function() {
-  if (exists('adjust.verbose', envir=.AdjustRuntimeEnv)) {
-    get('adjust.verbose', envir=.AdjustRuntimeEnv)
-  } else {
-    FALSE
-  }
+  .exists('adjust.verbose') && .get('adjust.verbose') || FALSE
+}
+
+.exists <- function(variable) {
+  exists(variable, envir=.AdjustRuntimeEnv, inherits=FALSE)
+}
+
+.get <- function(variable) {
+  get(variable, envir=.AdjustRuntimeEnv, inherits=FALSE)
 }
