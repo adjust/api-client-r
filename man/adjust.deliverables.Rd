@@ -3,14 +3,18 @@
 \name{adjust.deliverables}
 \alias{adjust.deliverables}
 \title{Delivers data for Adjust App KPIs. Refer to the KPI service docs under https://docs.adjust.com/en/kpi-service/
-together with this help entry.}
+together with this help entry. For this function, if an `app.tokens` variable has been setup or is given as an
+argument to the function, it'll take precedence over any setup or pass of a single `app.token` variable.}
 \usage{
-adjust.deliverables(app.token = NULL, tracker.token = NULL, ...)
+adjust.deliverables(app.token = NULL, tracker.token = NULL, ...,
+  app.tokens = NULL)
 }
 \arguments{
 \item{app.token}{pass it here or set it up once with \code{\link{set.app.token}}}
 
-\item{tracker.token}{If you want data for a given parent tracker, pass its token.}
+\item{tracker.token}{If you want data for a specific parent tracker, pass its token.}
+
+\item{app.tokens}{pass it here or set it up once with \code{\link{set.app.tokens}}}
 
 \item{start_date}{YYYY-MM-DD The start date of the selected period.}
 
@@ -31,7 +35,8 @@ KPI service docs.}
 }
 \description{
 Delivers data for Adjust App KPIs. Refer to the KPI service docs under https://docs.adjust.com/en/kpi-service/
-together with this help entry.
+together with this help entry. For this function, if an `app.tokens` variable has been setup or is given as an
+argument to the function, it'll take precedence over any setup or pass of a single `app.token` variable.
 }
 \examples{
 adjust.deliverables() # perhaps the simplest query, it uses the default request parameters on the setup app token.
