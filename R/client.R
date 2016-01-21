@@ -12,10 +12,11 @@
 #' session.
 #' @seealso \code{\link{set.user.token}}, \code{\link{user.token}}, \code{\link{set.app.token}}, \code{\link{app.token}}
 #' @export
-adjust.setup <- function(user.token, app.token=NULL) {
+adjust.setup <- function(user.token, app.token=NULL, app.tokens=NULL) {
   set.user.token(user.token)
 
   if (!is.null(app.token)) { set.app.token(app.token) }
+  if (!is.null(app.tokens)) { set.app.tokens(app.tokens) }
 }
 
 #' Set an Adjust app.token once using this function and you can issue multiple API requests saving yourself having to
@@ -35,6 +36,23 @@ app.token <- function() {
   }
 
   get('app.token', envir=.AdjustRuntimeEnv)
+}
+
+#' Set Adjust app.tokens once using this function and you can issue subsequent API requests for multiple apps saving
+#' yourself having to pass the tokens every time. @seealso \code{\link{set.user.token}}, \code{\link{user.token}},
+#' \code{\link{adjust.setup}}, \code{\link{app.token}}, \code{\link{app.tokens}} @export
+set.app.tokens <- function(app.tokens) { assign('app.tokens', app.tokens, envir=.AdjustRuntimeEnv) }
+
+#' Get the currently set app.tokens.
+#' @seealso \code{\link{set.user.token}}, \code{\link{user.token}}, \code{\link{set.app.token}},
+#' \code{\link{set.app.tokens}}, \code{\link{adjust.setup}}
+#' @export
+app.tokens <- function() {
+  if (!exists('app.tokens', envir=.AdjustRuntimeEnv)) {
+    stop('The multiple App tokens variable `app.tokens` needs to be setup first through set.app.tokens()')
+  }
+
+  get('app.tokens', envir=.AdjustRuntimeEnv)
 }
 
 #' Set an Adjust user.token, required for authorization.
@@ -66,8 +84,10 @@ adjust.disable.verbose <- function() {
 }
 
 #' Delivers data for Adjust App KPIs. Refer to the KPI service docs under https://docs.adjust.com/en/kpi-service/
-#' together with this help entry.
+#' together with this help entry. For this function, if an `app.tokens` variable has been setup or is given as an
+#' argument to the function, it'll take precedence over any setup or pass of a single `app.token` variable.
 #' @param app.token pass it here or set it up once with \code{\link{set.app.token}}
+#' @param app.tokens pass it here or set it up once with \code{\link{set.app.tokens}}
 #' @param tracker.token If you want data for a specific parent tracker, pass its token.
 #' @param start_date YYYY-MM-DD The start date of the selected period.
 #' @param end_date YYYY-MM-DD The end date of the selected period.
@@ -82,7 +102,16 @@ adjust.disable.verbose <- function() {
 #' @examples
 #' adjust.deliverables() # perhaps the simplest query, it uses the default request parameters on the setup app token.
 #' adjust.deliverables(countries=c('us', 'de')) # scope by countries.
-adjust.deliverables <- function(app.token=NULL, tracker.token=NULL, ...) {
+adjust.deliverables <- function(app.token=NULL, tracker.token=NULL, ..., app.tokens=NULL) {
+  if (is.null(app.token) && is.null(app.tokens) && length(objects(pattern='^app.tokens?$', envir=.AdjustRuntimeEnv)) < 1)
+    stop('You need to pass an app.token or app.tokens or use set.app.token() or set.app.tokens() to set them up.')
+
+  if (is.null(app.tokens) && !is.null(app.token))
+    return(.api.query(NULL, app.token=app.token, tracker.token=tracker.token, ...))
+
+  if (!is.null(app.tokens) || exists('app.tokens', envir=.AdjustRuntimeEnv))
+    return(.api.multiple.apps.query(app.tokens=app.tokens, ...))
+
   .api.query(NULL, app.token=app.token, tracker.token=tracker.token, ...)
 }
 
@@ -143,6 +172,21 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
                query=.query.list(...))
 }
 
+.api.multiple.apps.query <- function (app.tokens, ...) {
+  if (is.null(app.tokens) && !exists('app.tokens', envir=.AdjustRuntimeEnv)) {
+    stop('You need to pass app.tokens or set one using set.app.tokens()')
+  }
+
+  if (is.null(app.tokens)) { app.tokens <- app.tokens() }
+
+  app.tokens.string <- paste(app.tokens, collapse=',')
+
+  query.list = .query.list(..., app_tokens=app.tokens.string)
+  query.list$app_tokens = app.tokens.string
+
+  .get.request(path=.multiple.apps.api.path(), query=query.list)
+}
+
 .get.request <- function(...) {
   resp <- GET(.ADJUST.HOST, ..., add_headers(
     'Accept'=.ACCEPT.HEADER,
@@ -168,6 +212,10 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
   if (! is.null(resource)) { components <- c(components, resource) }
 
   sprintf('%s.csv', paste(components, collapse='/'))
+}
+
+.multiple.apps.api.path <- function() {
+  sprintf('%s.csv', .ROOT.PATH)
 }
 
 .query.list <- function(...) {

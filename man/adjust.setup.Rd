@@ -5,7 +5,7 @@
 \title{Convenience function for initiating a session with a user token and app token, generally required for the start of an Adjust API
 session.}
 \usage{
-adjust.setup(user.token, app.token = NULL)
+adjust.setup(user.token, app.token = NULL, app.tokens = NULL)
 }
 \description{
 Convenience function for initiating a session with a user token and app token, generally required for the start of an Adjust API

@@ -16,11 +16,22 @@ Let's have a walk through the functionalities through a couple of examples. Star
 
     > library(adjust)
 
+### Setup
+
 You're requered to enter your Adjust `user_token` for authentication that will be used over the entire R session. Here
 you could optionally give an `app_token` too, in case you plan to focus on one app. Alternatively, an `app_token` could
 be given with every request.
 
     > adjust.setup(user.token='aYSsuEVhAMDQDyZ8kj2K', app.token='abcdefg')
+
+You can also set multiple apps up.
+
+    > adjust.setup(user.token='aYSsuEVhAMDQDyZ8kj2K', app.tokens=c('abcdefg', 'gfedcba'))
+
+Note that if `app.tokens` variable has been set, it'll take precedence over `app.token` for API calls that support
+multiple apps, such as deliverables.
+
+### Statistics API calls
 
 Now you're fully setup to start requesting some data from the Adjust API. You can start with the simplest query:
 
@@ -56,8 +67,16 @@ for these functions has more usage details.
 
 ---
 
-For facilitated working with user tokens and app tokens, you can use the `set.user.token` and `set.app.token` functions.
-Again, see the R manuals for full details.
+For facilitated working with user tokens and app tokens, you can use the `set.user.token`, `set.app.token` and
+`set.app.tokens` functions. Note again that if `app.tokens` has been set, it'll take precedence over
+`app.token` for the API calls that support multiple apps.
+
+For full details, see the R manuals.
+
+### Debugging
+
+The functions `adjust.enable.verbose` and `adjust.disable.verbose` will trigger verbose mode, which will output details
+on each API call, such as exact API URL used.
 
 ## Contributions and bug reports.
 
