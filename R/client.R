@@ -215,7 +215,13 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
     stop(content(resp))
   }
 
-  data.table(content(resp,encoding="UTF-8"))
+  if (resp$headers$`content-type` != 'text/csv') {
+    stop('Unexpected response format was received by the KPI service. Please rerun with `adjust.enable.verbose()` and
+         create a GitHub issue with the problem.')
+  }
+
+  # We choose to parse the response using data.table::fread instead of readr::read_csv, which is the default in httr.
+  data.table::fread(content(resp, as='text', encoding="UTF-8"))
 }
 
 .api.path <- function(app.token, resource=NULL, tracker.token=NULL) {
