@@ -16,11 +16,10 @@
 #' @seealso \code{\link{set.user.token}}, \code{\link{user.token}}, \code{\link{set.app.token}},
 #' \code{\link{app.token}}, \code{\link{set.app.tokens}}, \code{\link{app.tokens}}
 #' @export
-adjust.setup <- function(user.token, app.token=NULL, app.tokens=NULL) {
-  set.user.token(user.token)
-
-  if (!is.null(app.token)) { set.app.token(app.token) }
-  if (!is.null(app.tokens)) { set.app.tokens(app.tokens) }
+adjust.setup <- function(user.token=NULL, app.token=NULL, app.tokens=NULL) {
+  if (!is.null(user.token)) set.user.token(user.token)
+  if (!is.null(app.token)) set.app.token(app.token)
+  if (!is.null(app.tokens)) set.app.tokens(app.tokens)
 }
 
 #' Set an Adjust app.token once using this function and you can issue multiple API requests saving yourself having to
@@ -28,14 +27,19 @@ adjust.setup <- function(user.token, app.token=NULL, app.tokens=NULL) {
 #' @seealso \code{\link{set.user.token}}, \code{\link{user.token}}, \code{\link{adjust.setup}}, \code{\link{app.token}}
 #' @export
 set.app.token <- function(app.token) {
-  assign('app.token', app.token, envir=.AdjustRuntimeEnv)
+  .assign('app.token', app.token)
 }
 
 #' Get the currently set app.token.
 #' @seealso \code{\link{set.user.token}}, \code{\link{user.token}}, \code{\link{set.app.token}}, \code{\link{adjust.setup}}
 #' @export
 app.token <- function() {
-  if (!.exists('app.token')) {
+  if (! .exists('app.token')) {
+    if (! is.null(.config()$app_token)) {
+      set.app.token(.config()$app_token)
+      return(.config()$app_token)
+    }
+
     stop('App token needs to be setup first through set.app.token()')
   }
 
@@ -45,14 +49,19 @@ app.token <- function() {
 #' Set Adjust app.tokens once using this function and you can issue subsequent API requests for multiple apps saving
 #' yourself having to pass the tokens every time. @seealso \code{\link{set.user.token}}, \code{\link{user.token}},
 #' \code{\link{adjust.setup}}, \code{\link{app.token}}, \code{\link{app.tokens}} @export
-set.app.tokens <- function(app.tokens) { assign('app.tokens', app.tokens, envir=.AdjustRuntimeEnv) }
+set.app.tokens <- function(app.tokens) { .assign('app.tokens', app.tokens) }
 
 #' Get the currently set app.tokens.
 #' @seealso \code{\link{set.user.token}}, \code{\link{user.token}}, \code{\link{set.app.token}},
 #' \code{\link{set.app.tokens}}, \code{\link{adjust.setup}}
 #' @export
 app.tokens <- function() {
-  if (!.exists('app.tokens')) {
+  if (! .exists('app.tokens')) {
+    if (! is.null(.config()$app_tokens)) {
+      set.app.tokens(.config()$app_tokens)
+      return(.config()$app_tokens)
+    }
+
     stop('The multiple App tokens variable `app.tokens` needs to be setup first through set.app.tokens()')
   }
 
@@ -63,16 +72,22 @@ app.tokens <- function() {
 #' @seealso \code{\link{adjust.setup}}, \code{\link{user.token}}, \code{\link{set.app.token}}, \code{\link{app.token}}
 #' @export
 set.user.token <- function(user.token) {
-  assign('user.token', user.token, envir=.AdjustRuntimeEnv)
+  .assign('user.token', user.token)
 }
 
 #' Get the currently set authorization user.token.
 #' @seealso \code{\link{set.user.token}}, \code{\link{adjust.setup}}, \code{\link{set.app.token}}, \code{\link{app.token}}
 #' @export
 user.token <- function() {
-  if (!.exists('user.token')) {
+  if (! .exists('user.token')) {
+    if (! is.null(.config()$user_token)) {
+      set.user.token(.config()$user_token)
+      return(.config()$user_token)
+    }
+
     stop('The user.token needs to be setup first using set.user.token("abcdefg").')
   }
+
   .get('user.token')
 }
 
@@ -80,14 +95,14 @@ user.token <- function() {
 #' @seealso \code{\link{adjust.disable.verbose}}
 #' @export
 adjust.enable.verbose <- function() {
-  assign('adjust.verbose', TRUE, envir=.AdjustRuntimeEnv)
+  .assign('adjust.verbose', TRUE)
 }
 
 #' Disable the verbose setting. Doing this will stop printing out additional meta data on the API requests.
 #' @seealso \code{\link{adjust.enable.verbose}}
 #' @export
 adjust.disable.verbose <- function() {
-  assign('adjust.verbose', FALSE, envir=.AdjustRuntimeEnv)
+  .assign('adjust.verbose', FALSE)
 }
 
 #' Delivers data for Adjust App KPIs. Refer to the KPI service docs under https://docs.adjust.com/en/kpi-service/
@@ -169,10 +184,6 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
 }
 
 .api.query <- function (resource, app.token, tracker.token, ...) {
-  if (is.null(app.token) && !.exists('app.token')) {
-    stop('You need to pass an app.token or set one using set.app.token()')
-  }
-
   if (is.null(app.token)) { app.token <- app.token() }
 
   .get.request(path=.api.path(app.token, tracker.token=tracker.token, resource=resource),
@@ -180,10 +191,6 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
 }
 
 .api.multiple.apps.query <- function (app.tokens, ...) {
-  if (is.null(app.tokens) && !.exists('app.tokens')) {
-    stop('You need to pass app.tokens or set one using set.app.tokens()')
-  }
-
   if (is.null(app.tokens)) { app.tokens <- app.tokens() }
 
   app.tokens.string <- paste(app.tokens, collapse=',')
@@ -256,4 +263,48 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
 
 .get <- function(variable) {
   get(variable, envir=.AdjustRuntimeEnv, inherits=FALSE)
+}
+
+.assign <- function(variable, value) {
+  assign(variable, value, envir=.AdjustRuntimeEnv)
+}
+
+.config <- function(file.name=NULL) {
+  if (.exists('adjust.config')) return(.get('adjust.config'))
+
+  if (!is.null(file.name) && !file.exists(file.name)) stop('File `', file.name, '` not found')
+
+  if (is.null(file.name)) file.name <- file.path(Sys.getenv('HOME'), '.adjustrc')
+
+  if (.no.config.support() || !file.exists(file.name)) {
+    .assign('adjust.config', list())
+    return(.get('adjust.config'))
+  }
+
+  config <- data.table(read.table(file.name, sep=":", col.names=c('setting', 'value'), stringsAsFactors=FALSE))
+
+  .parse.config(config)
+}
+
+.parse.config <- function(config) {
+  .value <- function(key) {
+    if (nrow(config[setting==key]) == 0) return(NULL)
+
+    val <- config[setting==key, gsub('(^[[:space:]]*|[[:space:]]*$)', '', value)]
+    if (length(val) > 1) stop('The `', key, ':` entry in the .adjustrc file must only appear once.')
+    val
+  }
+
+  result <- list()
+
+  result$user_token <- .value('user_token')
+  result$app_token  <- .value('app_token')
+  app.tokens <- .value('app_tokens')
+  if (! is.null(app.tokens)) result$app_tokens <- strsplit(app.tokens, ' ')[[1]]
+
+  return(result)
+}
+
+.no.config.support <- function() {
+  .Platform$OS.type != 'unix'
 }
