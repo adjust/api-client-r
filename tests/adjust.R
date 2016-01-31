@@ -57,3 +57,7 @@ test_that('.parse.config() treats incomplete config data correctly', {
   config <- data.table(setting=c('app_tokens', 'user_token'), value=c('my-app1 my-app2', 'my-user'))
   expect_that(.parse.config(config), is_identical_to(list(user_token='my-user', app_tokens=c('my-app1', 'my-app2'))))
 })
+
+test_that('adjust.deliverables() throws an informative error for wrong app.token', {
+  expect_that(adjust.deliverables(c('abc', 'cba')), throws_error('`app.token` cannot be a vector'))
+})

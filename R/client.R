@@ -128,6 +128,8 @@ adjust.deliverables <- function(app.token=NULL, tracker.token=NULL, ..., app.tok
   if (is.null(app.token) && is.null(app.tokens) && length(objects(pattern='^app.tokens?$', envir=.AdjustRuntimeEnv)) < 1)
     stop('You need to pass an app.token or app.tokens or use set.app.token() or set.app.tokens() to set them up.')
 
+  if (length(app.token) > 1) stop('Parameter `app.token` cannot be a vector. For multiple `app.tokens` use `adjust.deliverables(app.tokens=c(token1, token2, ...))`')
+
   if (is.null(app.tokens) && !is.null(app.token))
     return(.api.query(NULL, app.token=app.token, tracker.token=tracker.token, ...))
 
@@ -226,6 +228,8 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
 
 .api.path <- function(app.token, resource=NULL, tracker.token=NULL) {
   components <- c(.ROOT.PATH, app.token)
+
+  if (length(tracker.token) > 1) stop('Parameter `tracker.token` cannot be a vector. For tracker filtering use e.g. `adjust.deliverables(tracker_filter=c(token1, token2, ...))`')
 
   if (! is.null(tracker.token)) { components <- c(components, .TRACKERS.ROUTE, tracker.token) }
 
