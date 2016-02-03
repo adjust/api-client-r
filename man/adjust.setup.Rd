@@ -8,7 +8,7 @@ useful if you're interested in deliverable KPIs for all of your apps and for coh
 interested in a particular app. These settings could also be overwritten by the `adjust.cohorts`,
 `adjust.deliverables`, etc. function arguments.}
 \usage{
-adjust.setup(user.token, app.token = NULL, app.tokens = NULL)
+adjust.setup(user.token = NULL, app.token = NULL, app.tokens = NULL)
 }
 \description{
 Convenience function for initiating a session with a user token and app token, generally required for the start of an
