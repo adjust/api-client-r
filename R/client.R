@@ -214,6 +214,7 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
   }
 
   if (status_code(resp) != 200) {
+    warning('Unexpected HTTP response code from the KPI service: ', status_code(resp))
     stop(content(resp))
   }
 
