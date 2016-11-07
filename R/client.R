@@ -207,7 +207,7 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
   resp <- GET(.ADJUST.HOST, ..., add_headers(
     'Accept'=.ACCEPT.HEADER,
     'Authorization'=sprintf(.AUTHORIZATION.HEADER, user.token())
-  ))
+  ), verbose(info=TRUE))
 
   if (.verbose()) {
     cat(sprintf("Request URL:\n%s\n", URLdecode(resp$url)))
