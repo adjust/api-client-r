@@ -224,7 +224,24 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
   }
 
   # We choose to parse the response using data.table::fread instead of readr::read_csv, which is the default in httr.
-  data.table::fread(content(resp, as='text', encoding="UTF-8"))
+  res <- data.table::fread(content(resp, as='text', encoding='UTF-8'), integer64='numeric')
+
+  # Perform some parsing of the data.table columns
+  for (col in colnames(res)) {
+    # We treat NAs as 0 except in non-empty names/tokens
+    if (class(res[[col]]) != 'character') {
+      val <- res[[col]]
+      val[is.na(val)] <- 0
+      set(res, j=col, value=val)
+    }
+
+    # For consistency all integer class columns are converted to Numeric
+    if (class(res[[col]]) == 'integer') {
+      set(res, j=col, value=as.numeric(res[[col]]))
+    }
+  }
+
+  res
 }
 
 .api.path <- function(app.token, resource=NULL, tracker.token=NULL) {
