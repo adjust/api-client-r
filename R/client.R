@@ -3,8 +3,8 @@
 .TRACKERS.ROUTE <- 'trackers'
 .ACCEPT.HEADER <- 'text/csv'
 .AUTHORIZATION.HEADER <- 'Token token=%s'
-.LIST.QUERY.PARAMS <- c('kpis', 'countries', 'os_names', 'device_types', 'grouping', 'events', 'tracker_filter', 'impression_based')
-.VALUE.QUERY.PARAMS <- c('start_date', 'end_date', 'sandbox', 'period')
+.LIST.QUERY.PARAMS <- c('kpis', 'countries', 'os_names', 'device_types', 'grouping', 'events', 'tracker_filter')
+.VALUE.QUERY.PARAMS <- c('start_date', 'end_date', 'sandbox', 'period', 'impression_based')
 
 .AdjustRuntimeEnv <- new.env()
 
