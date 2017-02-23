@@ -4,7 +4,7 @@
 .ACCEPT.HEADER <- 'text/csv'
 .AUTHORIZATION.HEADER <- 'Token token=%s'
 .LIST.QUERY.PARAMS <- c('kpis', 'countries', 'os_names', 'device_types', 'grouping', 'events', 'tracker_filter')
-.VALUE.QUERY.PARAMS <- c('start_date', 'end_date', 'sandbox', 'period', 'impression_based')
+.VALUE.QUERY.PARAMS <- c('start_date', 'end_date', 'sandbox', 'period', 'impression_based', 'utc_offset', 'day_def')
 
 .AdjustRuntimeEnv <- new.env()
 
@@ -125,18 +125,7 @@ adjust.disable.verbose <- function() {
 #' adjust.deliverables() # perhaps the simplest query, it uses the default request parameters on the setup app token.
 #' adjust.deliverables(countries=c('us', 'de')) # scope by countries.
 adjust.deliverables <- function(app.token=NULL, tracker.token=NULL, ..., app.tokens=NULL) {
-  if (is.null(app.token) && is.null(app.tokens) && length(objects(pattern='^app.tokens?$', envir=.AdjustRuntimeEnv)) < 1)
-    stop('You need to pass an app.token or app.tokens or use set.app.token() or set.app.tokens() to set them up.')
-
-  if (length(app.token) > 1) stop('Parameter `app.token` cannot be a vector. For multiple `app.tokens` use `adjust.deliverables(app.tokens=c(token1, token2, ...))`')
-
-  if (is.null(app.tokens) && !is.null(app.token))
-    return(.api.query(NULL, app.token=app.token, tracker.token=tracker.token, ...))
-
-  if (!is.null(app.tokens) || .exists('app.tokens'))
-    return(.api.multiple.apps.query(app.tokens=app.tokens, ...))
-
-  .api.query(NULL, app.token=app.token, tracker.token=tracker.token, ...)
+  .adjust.generic.call(NULL, ...)
 }
 
 #' Delivers data for Adjust Event KPIs. Refer to the KPI service docs under https://docs.adjust.com/en/kpi-service/
@@ -160,7 +149,7 @@ adjust.deliverables <- function(app.token=NULL, tracker.token=NULL, ..., app.tok
 #' adjust.events() # perhaps the simplest query, it uses the default request parameters on the setup app token.
 #' adjust.events(countries=c('us', 'de')) # scope by countries.
 adjust.events <- function(app.token=NULL, tracker.token=NULL, ...) {
-  .api.query('events', app.token=app.token, tracker.token=tracker.token, ...)
+  .adjust.generic.call('events', ...)
 }
 
 #' Delivers data for Adjust Cohorts. Refer to the KPI service docs under https://docs.adjust.com/en/kpi-service/
@@ -182,7 +171,22 @@ adjust.events <- function(app.token=NULL, tracker.token=NULL, ...) {
 #' KPI service docs.
 #' @export
 adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
-  .api.query('cohorts', app.token=app.token, tracker.token=tracker.token, ...)
+  .adjust.generic.call('cohorts', ...)
+}
+
+.adjust.generic.call <- function(resource=NULL, app.token=NULL, tracker.token=NULL, ...) {
+  if (is.null(app.token) && is.null(app.tokens) && length(objects(pattern='^app.tokens?$', envir=.AdjustRuntimeEnv)) < 1)
+    stop('You need to pass an app.token or app.tokens or use set.app.token() or set.app.tokens() to set them up.')
+
+  if (length(app.token) > 1) stop('Parameter `app.token` cannot be a vector. For multiple `app.tokens` use `adjust.deliverables(app.tokens=c(token1, token2, ...))`')
+
+  if (is.null(app.tokens) && !is.null(app.token))
+    return(.api.query(resource, app.token=app.token, tracker.token=tracker.token, ...))
+
+  if (!is.null(app.tokens) || .exists('app.tokens'))
+    return(.api.multiple.apps.query(resource, app.tokens=app.tokens, ...))
+
+  .api.query(resource, app.token=app.token, tracker.token=tracker.token, ...)
 }
 
 .api.query <- function (resource, app.token, tracker.token, ...) {
@@ -192,7 +196,7 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
                query=.query.list(...))
 }
 
-.api.multiple.apps.query <- function (app.tokens, ...) {
+.api.multiple.apps.query <- function (resource, app.tokens, ...) {
   if (is.null(app.tokens)) { app.tokens <- app.tokens() }
 
   app.tokens.string <- paste(app.tokens, collapse=',')
@@ -200,7 +204,7 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
   query.list = .query.list(..., app_tokens=app.tokens.string)
   query.list$app_tokens = app.tokens.string
 
-  .get.request(path=.multiple.apps.api.path(), query=query.list)
+  .get.request(path=.multiple.apps.api.path(resource=resource), query=query.list)
 }
 
 .get.request <- function(...) {
@@ -256,8 +260,11 @@ adjust.cohorts <- function(app.token=NULL, tracker.token=NULL, ...) {
   sprintf('%s.csv', paste(components, collapse='/'))
 }
 
-.multiple.apps.api.path <- function() {
-  sprintf('%s.csv', .ROOT.PATH)
+.multiple.apps.api.path <- function(resource=NULL) {
+  if (is.null(resource))
+    sprintf('%s.csv', .ROOT.PATH)
+  else
+    sprintf('%s/%s.csv', resource, .ROOT.PATH)
 }
 
 .query.list <- function(...) {
