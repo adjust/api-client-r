@@ -5,12 +5,9 @@
 \title{Delivers data for Adjust Cohorts. Refer to the KPI service docs under https://docs.adjust.com/en/kpi-service/
 together with this help entry.}
 \usage{
-adjust.cohorts(app.token = NULL, tracker.token = NULL, ...)
+adjust.cohorts(app.tokens=NULL, ...)
 }
 \arguments{
-\item{app.token}{pass it here or set it up once with \code{\link{set.app.token}}}
-
-\item{tracker.token}{If you want data for a given parent tracker, pass its token.}
 
 \item{start_date}{YYYY-MM-DD The start date of the selected period.}
 

@@ -6,13 +6,9 @@
 together with this help entry. For this function, if an `app.tokens` variable has been setup or is given as an
 argument to the function, it'll take precedence over any setup or pass of a single `app.token` variable.}
 \usage{
-adjust.deliverables(app.token = NULL, tracker.token = NULL, ...,
-  app.tokens = NULL)
+adjust.deliverables(app.tokens=NULL, ...)
 }
 \arguments{
-\item{app.token}{pass it here or set it up once with \code{\link{set.app.token}}}
-
-\item{tracker.token}{If you want data for a specific parent tracker, pass its token.}
 
 \item{app.tokens}{pass it here or set it up once with \code{\link{set.app.tokens}}}
 
