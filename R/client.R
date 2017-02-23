@@ -208,6 +208,11 @@ adjust.cohorts <- function(app.tokens=NULL, ...) {
 
   res <- list()
 
+  supported.args <- c(.LIST.QUERY.PARAMS, .VALUE.QUERY.PARAMS)
+  if (length(setdiff(arg.names, supported.args)) > 0) {
+    stop('Unsupported query parameters passed: ', paste(setdiff(arg.names, supported.args), collapse=','))
+  }
+
   for(param in .LIST.QUERY.PARAMS) {
     if (param %in% arg.names) {
       res[param] <- tolower(paste(args[[param]], collapse=','))
