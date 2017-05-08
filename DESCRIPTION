@@ -11,3 +11,4 @@ Depends:
     httr, data.table
 Collate:
     'client.R'
+RoxygenNote: 6.0.1
