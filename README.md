@@ -18,10 +18,7 @@ Let's have a walk through the functionalities through a couple of examples. Star
 
 ### Setup and Authentication
 
-In order for you to access the KPI Service, you need to authenticate with `user_token`. Your `user_token`, once you supply it, will be used throughout the entire R session. Furthermore, you need to provide `app_token` or `app_tokens` for the requests.
-
-Note that some API calls, e.g. `adjust.deliverables()` support multiple app_tokens, while others - e.g.
-`adjust.events()` and `adjust.cohorts()` don't. For these two, `app.token` and not `app.tokens` will be required.
+In order for you to access the KPI Service, you need to authenticate with `user_token`. Your `user_token`, once you supply it, will be used throughout the entire R session. Furthermore, you need to provide `app_tokens` for the requests.
 
 You have three ways to authenticate and provide these settings.
 
@@ -35,8 +32,7 @@ The config file should be placed in your `HOME` (`~/`) directory and be named `.
 
 ```
 user_token: aYSsuEVhAMDQDyZ8kj2K
-app_tokens: abcdefg gfedcba
-app_token: gfedcba
+app_tokens: abcdefg,gfedcba
 ```
 
 You can skip any of these settings and still use the rest. For example, you can only keep your `user_token` there for
@@ -45,35 +41,30 @@ authentication, and provide `app_tokens` in a different way.
 #### Using `adjust.setup()` Function
 
 Even if you use the config file, you could still overwrite all settings there in an R session. To do this, you can use
-the `adjust.setup()` function or the `set.user.token()`, `set.app.tokens()` and `set.app.token()` functions. See the
-help pages for each of those for more details and here are two examples:
-
-    > adjust.setup(user.token='aYSsuEVhAMDQDyZ8kj2K', app.token='abcdefg')
-
-You can also set multiple apps up.
+the `adjust.setup()` function or the `set.user.token()`, `set.app.tokens()` functions. See the help pages for each of
+those for more details and here is the example:
 
     > adjust.setup(user.token='aYSsuEVhAMDQDyZ8kj2K', app.tokens=c('abcdefg', 'gfedcba'))
 
 #### Provide `app.tokens` as Function Arguments.
 
-Even if you use the config file, call `adjust.setup()` in your script, you can still pass `app.token` or `app.tokens`
+Even if you use the config file, call `adjust.setup()` in your script, you can still pass `app.tokens`
 arguments to individual API calls. See the function descriptions for more details.
-
-Note that if `app.tokens` variable has been set, it'll take precedence over `app.token` for API calls that support
-multiple apps, such as `adjust.deliverables()`.
 
 ### Statistics API calls
 
-There are three functions that return KPI data from the API - `adjust.deliverables()`, `adjust.events()` and
-`adjust.cohorts()`.
-
-For details on any of those, you should refer to the help pages by `?adjust.deliverables` as well as the KPI service
-documentation, cited above. Here're some quick usage examples too:
+There are three functions that return KPI data from the API:
 
     > adjust.deliverables()
+    > adjust.events()
+    > adjust.cohorts()
 
-This is the simplest query. It will return the default API response for the setup app token. You can, more
-interestingly, also specify parameters:
+Once you've setup your user token and app tokens, then each of these calls will produce data for you straight away.
+
+For details on any of those, you should refer to the help pages for example by `?adjust.deliverables` as well as the KPI
+service documentation, cited above.
+
+You can, more interestingly, also specify parameters:
 
     > adjust.deliverables(start_date='2015-01-01', end_date='2015-01-10',
         countries=c('us', 'de'), kpis=c('clicks', 'sessions', 'installs'))
@@ -93,7 +84,7 @@ A more complete example:
         end_date='2015-05-10',
         sandbox=TRUE,
         grouping=c('trackers', 'countries'),
-        tracker.token='26kvyi')
+        tracker_filter=c('26kvyi'))
       )
 
 For this function, you can issue calls for multiple app tokens at the same time and group for example by `grouping=c('app', 'network')`.
