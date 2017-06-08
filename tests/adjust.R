@@ -6,10 +6,8 @@ for (f in list.files(source.path, '[.][rR]')) { source(file.path(source.path, f)
 
 test_that('.api.path() composes API paths correctly', {
   expect_that('kpis/v1/ABCDEF.csv', is_identical_to(.api.path(app.token='ABCDEF')))
-  expect_that('kpis/v1/ABCDEF/trackers/12345.csv', is_identical_to(.api.path(app.token='ABCDEF', tracker.token=12345)))
-  expect_that('kpis/v1/ABCDEF/trackers/12345/cohorts.csv',
-    is_identical_to(.api.path(app.token='ABCDEF', tracker.token=12345, resource='cohorts')))
   expect_that('kpis/v1/ABCDEF/events.csv', is_identical_to(.api.path(app.token='ABCDEF', resource='events')))
+  expect_that('kpis/v1/ABCDEF/cohorts.csv', is_identical_to(.api.path(app.token='ABCDEF', resource='cohorts')))
 })
 
 test_that('.query.list() returns correct list of query params', {
