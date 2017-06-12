@@ -3,7 +3,7 @@
 .ACCEPT.HEADER <- 'text/csv'
 .AUTHORIZATION.HEADER <- 'Token token=%s'
 .LIST.QUERY.PARAMS <- c('kpis', 'countries', 'os_names', 'device_types', 'grouping', 'events', 'tracker_filter')
-.VALUE.QUERY.PARAMS <- c('start_date', 'end_date', 'sandbox', 'period', 'impression_based', 'utc_offset', 'day_def')
+.VALUE.QUERY.PARAMS <- c('start_date', 'end_date', 'sandbox', 'period', 'impression_based', 'reattributed','utc_offset', 'day_def')
 
 .AdjustRuntimeEnv <- new.env()
 
