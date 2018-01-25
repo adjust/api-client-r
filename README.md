@@ -95,6 +95,12 @@ Note that this function supports multiple `app_tokens`. This means that you can 
 
 This will return KPI data for the two apps, grouped by the app and all its network trackers.
 
+### Custom API instances
+
+For most users this functionality wouldn't be necessary, but the adjust R client
+allows for custom API hosts to be used. Check the function `adjust.set.host()`
+for more details.
+
 ### Debugging
 
 The functions `adjust.enable.verbose()` and `adjust.disable.verbose()` will trigger verbose mode, which will output
