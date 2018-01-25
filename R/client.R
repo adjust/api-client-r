@@ -1,4 +1,4 @@
-.ADJUST.HOST <- 'https://api.adjust.com'
+.DEFAULT.ADJUST.HOST <- 'https://api.adjust.com'
 .ROOT.PATH <- 'kpis/v1'
 .ACCEPT.HEADER <- 'text/csv'
 .AUTHORIZATION.HEADER <- 'Token token=%s'
@@ -6,6 +6,13 @@
 .VALUE.QUERY.PARAMS <- c('start_date', 'end_date', 'sandbox', 'period', 'impression_based', 'reattributed','utc_offset', 'day_def')
 
 .AdjustRuntimeEnv <- new.env()
+
+#' To allow access to custom instances of the Adjust KPI service, the API host
+#' could be set by this function.
+#' @export
+adjust.set.host <- function(adjust.host) {
+  .assign('adjust.host', adjust.host)
+}
 
 #' Convenience function for initiating a session with a user token and app tokens, generally required for the start of
 #' an Adjust API session. These settings could also be overwritten by the `adjust.cohorts`, `adjust.deliverables`, etc.
@@ -139,6 +146,11 @@ adjust.cohorts <- function(app.tokens=NULL, ...) {
   .api.query('cohorts', app.tokens, ...)
 }
 
+.get.adjust.host <- function() {
+  if (.exists('adjust.host')) return(.get('adjust.host'))
+  .DEFAULT.ADJUST.HOST
+}
+
 .api.query <- function (resource, app.tokens, ...) {
   if (is.null(app.tokens)) { app.tokens <- app.tokens() }
 
@@ -153,7 +165,7 @@ adjust.cohorts <- function(app.tokens=NULL, ...) {
 }
 
 .get.request <- function(...) {
-  resp <- GET(.ADJUST.HOST, ..., add_headers(
+  resp <- GET(.get.adjust.host(), ..., add_headers(
     'Accept'=.ACCEPT.HEADER,
     'Authorization'=sprintf(.AUTHORIZATION.HEADER, user.token())
   ))
