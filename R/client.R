@@ -70,6 +70,12 @@ user.token <- function() {
   .get('user.token')
 }
 
+#' Has the verbose setting been enabled or not.
+#' @export
+adjust.is.verbose <- function() {
+  .exists('adjust.verbose') && .get('adjust.verbose') || FALSE
+}
+
 #' Enable the verbose setting. Doing this will print out additional meta data on the API requests.
 #' @seealso \code{\link{adjust.disable.verbose}}
 #' @export
@@ -146,7 +152,9 @@ adjust.cohorts <- function(app.tokens=NULL, ...) {
   .api.query('cohorts', app.tokens, ...)
 }
 
-.get.adjust.host <- function() {
+#' Get the current host setting for the KPI service instance.
+#' @export
+adjust.get.host <- function() {
   if (.exists('adjust.host')) return(.get('adjust.host'))
   .DEFAULT.ADJUST.HOST
 }
@@ -165,12 +173,12 @@ adjust.cohorts <- function(app.tokens=NULL, ...) {
 }
 
 .get.request <- function(...) {
-  resp <- GET(.get.adjust.host(), ..., add_headers(
+  resp <- GET(adjust.get.host(), ..., add_headers(
     'Accept'=.ACCEPT.HEADER,
     'Authorization'=sprintf(.AUTHORIZATION.HEADER, user.token())
   ))
 
-  if (.verbose()) {
+  if (adjust.is.verbose()) {
     cat(sprintf("Request URL:\n%s\n", URLdecode(resp$url)))
   }
 
@@ -238,10 +246,6 @@ adjust.cohorts <- function(app.tokens=NULL, ...) {
   }
 
   res
-}
-
-.verbose <- function() {
-  .exists('adjust.verbose') && .get('adjust.verbose') || FALSE
 }
 
 .exists <- function(variable) {
