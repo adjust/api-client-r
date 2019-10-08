@@ -193,7 +193,7 @@ adjust.get.host <- function() {
   }
 
   # We choose to parse the response using data.table::fread instead of readr::read_csv, which is the default in httr.
-  res <- data.table::fread(content(resp, as='text', encoding='UTF-8'), integer64='numeric')
+  res <- data.table::fread(content(resp, as='text', encoding='UTF-8'), integer64='numeric', encoding='UTF-8')
 
   # Perform some parsing of the data.table columns
   for (col in colnames(res)) {
